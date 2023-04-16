@@ -24,6 +24,15 @@ Globals="*res://auto_load/globals.gd"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/github_to_itch/plugin.cfg")
+
+[github_to_itch]
+
+config/itch_username="atornity"
+config/itch_project_name="godot-recoil-system"
+
 [input]
 
 mouse_capture={
