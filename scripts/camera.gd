@@ -28,7 +28,7 @@ enum RecoilMode {
 ]
 @export var recoil_scale: float = 1
 
-@export var shake_strength: float = 0.1
+@export var shake_scale: float = 0.1
 
 @export var target_fov: float = 70
 @export var sensitivity = Vector2i(5, 5)
@@ -58,6 +58,22 @@ var shake_fov_vel: float = 0
 
 
 func _input(event):
+	if event.is_action_pressed("action_equip_pistol"):
+		fire_mode = FireMode.MANUAL
+		fire_rate = 0.05
+		recoil_scale = 0.9
+		shake_scale = 0.05
+	if event.is_action_pressed("action_equip_rifle"):
+		fire_mode = FireMode.AUTOMATIC
+		fire_rate = 0.15
+		recoil_scale = 1
+		shake_scale = 0.1
+	if event.is_action_pressed("action_equip_shotgun"):
+		fire_mode = FireMode.MANUAL
+		fire_rate = 0.4
+		recoil_scale = 3
+		shake_scale = 0.6
+	
 	mouse_input(event)
 
 
@@ -66,12 +82,11 @@ func _process(delta):
 		look_rotation.x = 0
 	
 	process_shooting(delta)
-	process_recoil(delta)
 	process_shake(delta)
+	process_recoil(delta)
 	
 	# apply recoil and shake to camera rotation
 	transform.basis = Basis.from_euler(look_rotation + recoil + shake)
-	
 	fov = target_fov + shake_fov
 
 
@@ -79,7 +94,7 @@ func mouse_input(event):
 	if !Globals.mouse_enabled || Input.mouse_mode != Input.MOUSE_MODE_CAPTURED: return
 	
 	if event is InputEventMouseMotion:
-		var mouse_delta = event.relative * Vector2(sensitivity.x, sensitivity.y) * 0.001
+		var mouse_delta = event.relative * Vector2(sensitivity.x, sensitivity.y) * 0.001 * Globals.sensitivity_scale
 		
 		look_rotation.y -= mouse_delta.x
 		look_rotation.x -= mouse_delta.y
@@ -89,8 +104,10 @@ func mouse_input(event):
 
 @warning_ignore("shadowed_variable")
 func shoot(recoil: Vector3):
-	add_shake(Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-1, 1)) * shake_strength, 60 * shake_strength)
-	add_recoil(recoil * recoil_scale)
+	if Globals.shake_enabled:
+		add_shake(Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-1, 1)) * shake_scale, 60 * shake_scale)
+	if Globals.recoil_enabled:
+		add_recoil(recoil * recoil_scale)
 
 
 func process_shooting(delta: float):
@@ -129,6 +146,10 @@ func add_recoil(recoil: Vector3):
 
 
 func process_recoil(delta: float):
+	# we don't need to do any of this if recoil is zero
+	if target_recoil == Vector3.ZERO and recoil == Vector3.ZERO:
+		return
+	
 	# constantly interpolate target_recoil back to zero
 	target_recoil.x -= min(sign(target_recoil.x) * delta * recoil_return_speed, abs(target_recoil.x))
 	target_recoil.y -= min(sign(target_recoil.y) * delta * recoil_return_speed, abs(target_recoil.y))
@@ -143,53 +164,73 @@ func process_recoil(delta: float):
 # doesn't end up lower than when we started shooting
 # hope this makes sense!
 func recoil_compensation(mouse_delta: Vector2):
-	# I'm not going to explain how any of this works sorry
+	# we don't need to do any of this if recoil is zero
+	if target_recoil == Vector3.ZERO and recoil == Vector3.ZERO:
+		return
 	
 	# x axis
 	# you can read this as "if we're componsating for recoil in this direction"
 	if target_recoil.x < 0 && mouse_delta.y < 0:
 		# if we go past 0, we set recoil to 0
-		# and add the existing recoil to look_rotation
+		# and add the existing target_recoil to look_rotation
 		if target_recoil.x - mouse_delta.y > 0:
 			look_rotation.x += target_recoil.x
-			recoil.x -= target_recoil.x
 			target_recoil.x = 0
-		# otherwise, we substract mouse delta from recoil 
+		# otherwise, we substract mouse delta from target_recoil 
 		# and add mouse delta to look_rotation
 		else:
 			look_rotation.x += mouse_delta.y
 			target_recoil.x -= mouse_delta.y
-			recoil.x -= mouse_delta.y
 	
 	elif target_recoil.x > 0 && mouse_delta.y > 0:
 		if target_recoil.x - mouse_delta.y < 0:
 			look_rotation.x += target_recoil.y
-			recoil.x -= target_recoil.y
 			target_recoil.x = 0
 		else:
 			look_rotation.x += mouse_delta.y
 			target_recoil.x -= mouse_delta.y
+	
+	# do the same for the smooth recoil
+	# might not be necesarry
+	if recoil.x < 0 && mouse_delta.y < 0:
+		if recoil.x - mouse_delta.y > 0:
+			recoil.x = 0
+		else:
+			recoil.x -= mouse_delta.y
+	
+	elif recoil.x > 0 && mouse_delta.y > 0:
+		if recoil.x - mouse_delta.y < 0:
+			recoil.x = 0
+		else:
 			recoil.x -= mouse_delta.y
 	
 	# y axis
 	if target_recoil.y < 0 && mouse_delta.x < 0:
 		if target_recoil.y - mouse_delta.y > 0:
 			look_rotation.y += target_recoil.y
-			recoil.y -= target_recoil.y
 			target_recoil.y = 0
 		else:
 			look_rotation.y += mouse_delta.x
 			target_recoil.y -= mouse_delta.x
-			recoil.y -= mouse_delta.x
 	
 	elif target_recoil.y > 0 && mouse_delta.x > 0:
 		if target_recoil.y - mouse_delta.x < 0:
 			look_rotation.y += target_recoil.y
-			recoil.y -= target_recoil.y
 			target_recoil.y = 0
 		else:
 			look_rotation.y += mouse_delta.x
 			target_recoil.y -= mouse_delta.x
+	
+	if recoil.y < 0 && mouse_delta.x < 0:
+		if recoil.y - mouse_delta.x > 0:
+			recoil.y = 0
+		else:
+			recoil.y -= mouse_delta.x
+	
+	elif recoil.y > 0 && mouse_delta.x > 0:
+		if recoil.y - mouse_delta.x < 0:
+			recoil.y = 0
+		else:
 			recoil.y -= mouse_delta.x
 	
 	# z axis
