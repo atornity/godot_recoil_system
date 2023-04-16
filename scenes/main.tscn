@@ -73,6 +73,7 @@ shadow_enabled = true
 environment = SubResource("Environment_jyxof")
 
 [node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.73614, 0)
 script = ExtResource("2_qaxw3")
 fire_rate = 0.18
 
@@ -82,20 +83,21 @@ material_override = SubResource("StandardMaterial3D_trxi3")
 mesh = SubResource("QuadMesh_3tmvj")
 
 [node name="World" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.795243, 0)
 
 [node name="Tarrein" type="MeshInstance3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55649, 0)
 material_override = SubResource("StandardMaterial3D_th3mv")
 cast_shadow = 0
 mesh = ExtResource("4_m82ig")
 skeleton = NodePath("../..")
 
 [node name="Sphere" type="MeshInstance3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -67.7459)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55649, -67.7459)
 material_override = SubResource("StandardMaterial3D_clxgu")
 cast_shadow = 0
 mesh = SubResource("SphereMesh_s1sdd")
 
 [node name="Floor" type="MeshInstance3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.854773, 0)
 material_override = SubResource("StandardMaterial3D_by7c5")
 mesh = SubResource("PlaneMesh_dd0dd")
