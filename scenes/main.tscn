@@ -74,6 +74,7 @@ environment = SubResource("Environment_jyxof")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 script = ExtResource("2_qaxw3")
+fire_rate = 0.18
 
 [node name="AimMesh" type="MeshInstance3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.10043)
