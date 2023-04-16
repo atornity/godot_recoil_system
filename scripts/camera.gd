@@ -30,6 +30,7 @@ enum RecoilMode {
 
 @export var shake_strength: float = 0.1
 
+@export var target_fov: float = 70
 @export var sensitivity = Vector2i(5, 5)
 
 var look_rotation = transform.basis.get_euler()
@@ -49,9 +50,12 @@ var recoil_return_speed: float = 0.5
 # camera shake
 var shake = Vector3.ZERO
 var shake_vel = Vector3.ZERO
-var shake_speed: float = 4
+var shake_speed: float = 6
 var shake_stop_speed: float = 12
 var shake_return_speed: float = 40
+var shake_fov: float = 0
+var shake_fov_vel: float = 0
+
 
 func _input(event):
 	mouse_input(event)
@@ -65,7 +69,10 @@ func _process(delta):
 	process_recoil(delta)
 	process_shake(delta)
 	
+	# apply recoil and shake to camera rotation
 	transform.basis = Basis.from_euler(look_rotation + recoil + shake)
+	
+	fov = target_fov + shake_fov
 
 
 func mouse_input(event):
@@ -80,9 +87,11 @@ func mouse_input(event):
 		recoil_compensation(mouse_delta)
 
 
+@warning_ignore("shadowed_variable")
 func shoot(recoil: Vector3):
-	add_shake(Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-1, 1)) * shake_strength)
+	add_shake(Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-1, 1)) * shake_strength, 60 * shake_strength)
 	add_recoil(recoil * recoil_scale)
+
 
 func process_shooting(delta: float):
 	match fire_mode:
@@ -188,11 +197,17 @@ func recoil_compensation(mouse_delta: Vector2):
 	# ~phew
 
 
-func add_shake(shake: Vector3):
+@warning_ignore("shadowed_variable", "shadowed_variable_base_class")
+func add_shake(shake: Vector3, fov: float):
 	shake_vel += shake
+	shake_fov_vel += fov
 
 
 func process_shake(delta: float):
+	shake_fov_vel = lerpf(shake_fov_vel, 0, delta * shake_stop_speed)
+	shake_fov_vel -= shake_return_speed * delta * shake_fov
+	shake_fov += shake_speed * delta * shake_fov_vel
+	
 	shake_vel = lerp(shake_vel, Vector3.ZERO, delta * shake_stop_speed)
 	shake_vel -= shake_return_speed * delta * shake
 	shake += shake_speed * delta * shake_vel
