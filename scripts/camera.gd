@@ -12,8 +12,8 @@ enum RecoilMode {
 
 @export var fire_mode = FireMode.AUTOMATIC
 @export var fire_rate: float = 0.2
+
 @export var recoil_mode = RecoilMode.PROCEDURAL
-# this is a bad pattern lol
 @export var recoil_pattern := [
 	Vector3(0.1 , -0.04, 0),
 	Vector3(0.11 , -0.05, 0),
@@ -27,19 +27,31 @@ enum RecoilMode {
 	Vector3(0.13 , 0.05, 0),
 ]
 @export var recoil_scale: float = 1
+
+@export var shake_strength: float = 0.1
+
 @export var sensitivity = Vector2i(5, 5)
 
 var look_rotation = transform.basis.get_euler()
 
+# shooty shoot
 var is_shooting = false
 var shots_fired = 0
 var can_shoot = true
 var shoot_time: float = 0
 
+# recoil
 var target_recoil = Vector3.ZERO
 var recoil = Vector3.ZERO
 var recoil_speed: float = 5
 var recoil_return_speed: float = 0.5
+
+# camera shake
+var shake = Vector3.ZERO
+var shake_vel = Vector3.ZERO
+var shake_speed: float = 4
+var shake_stop_speed: float = 12
+var shake_return_speed: float = 40
 
 func _input(event):
 	mouse_input(event)
@@ -51,8 +63,9 @@ func _process(delta):
 	
 	process_shooting(delta)
 	process_recoil(delta)
+	process_shake(delta)
 	
-	transform.basis = Basis.from_euler(look_rotation + recoil)
+	transform.basis = Basis.from_euler(look_rotation + recoil + shake)
 
 
 func mouse_input(event):
@@ -66,6 +79,10 @@ func mouse_input(event):
 		
 		recoil_compensation(mouse_delta)
 
+
+func shoot(recoil: Vector3):
+	add_shake(Vector3(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5), randf_range(-1, 1)) * shake_strength)
+	add_recoil(recoil * recoil_scale)
 
 func process_shooting(delta: float):
 	match fire_mode:
@@ -86,10 +103,10 @@ func process_shooting(delta: float):
 	if is_shooting and can_shoot:
 		match recoil_mode:
 			RecoilMode.PROCEDURAL:
-				add_recoil(Vector3(0.1, randf_range(-0.1, 0.1), 0) * recoil_scale)
+				shoot(Vector3(0.1, randf_range(-0.1, 0.1), 0))
 			RecoilMode.PATTERN:
 				var i = min(shots_fired, recoil_pattern.size() - 1)
-				add_recoil(recoil_pattern[i] * recoil_scale)
+				shoot(recoil_pattern[i])
 		shots_fired += 1
 		can_shoot = false
 	
@@ -169,3 +186,13 @@ func recoil_compensation(mouse_delta: Vector2):
 	# z axis
 	# jk, we don't need that
 	# ~phew
+
+
+func add_shake(shake: Vector3):
+	shake_vel += shake
+
+
+func process_shake(delta: float):
+	shake_vel = lerp(shake_vel, Vector3.ZERO, delta * shake_stop_speed)
+	shake_vel -= shake_return_speed * delta * shake
+	shake += shake_speed * delta * shake_vel
