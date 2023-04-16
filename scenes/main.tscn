@@ -1,9 +1,11 @@
-[gd_scene load_steps=16 format=3 uid="uid://cat4pp5xk5cc3"]
+[gd_scene load_steps=22 format=3 uid="uid://cat4pp5xk5cc3"]
 
 [ext_resource type="Script" path="res://scripts/camera.gd" id="2_qaxw3"]
+[ext_resource type="Script" path="res://scenes/aim_debug.gd" id="2_ti3nm"]
 [ext_resource type="Texture2D" uid="uid://b0xi6mvwhqlx1" path="res://images/tarrein.png" id="3_4ba83"]
 [ext_resource type="ArrayMesh" uid="uid://dk44d8yugvva2" path="res://models/tarrein.res" id="4_m82ig"]
 [ext_resource type="Texture2D" uid="uid://dkkxjg1jhf3um" path="res://images/floor.png" id="5_8p5qq"]
+[ext_resource type="Script" path="res://scenes/hud.gd" id="6_bsb1o"]
 
 [sub_resource type="GDScript" id="GDScript_8yide"]
 script/source = "extends Node3D
@@ -30,9 +32,12 @@ fog_sun_scatter = 0.05
 fog_density = 0.005
 fog_sky_affect = 0.5
 fog_height_density = 0.05
+volumetric_fog_density = 0.01
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trxi3"]
+transparency = 1
 shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.25098)
 
 [sub_resource type="QuadMesh" id="QuadMesh_3tmvj"]
 size = Vector2(0.01, 0.01)
@@ -45,6 +50,7 @@ emission_energy_multiplier = 0.33
 emission_texture = ExtResource("3_4ba83")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_clxgu"]
+transparency = 1
 shading_mode = 0
 albedo_color = Color(1, 0.290196, 0.709804, 1)
 
@@ -52,22 +58,48 @@ albedo_color = Color(1, 0.290196, 0.709804, 1)
 radius = 10.0
 height = 20.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7e3mn"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(0.815686, 0.290196, 0.709804, 0.196078)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_by7c5"]
 transparency = 1
 shading_mode = 0
-albedo_color = Color(0.690196, 0.827451, 1, 1)
+albedo_color = Color(0.729412, 0.85098, 1, 1)
 albedo_texture = ExtResource("5_8p5qq")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_dd0dd"]
 size = Vector2(10, 10)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ah08m"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.529412, 0.6, 1, 0.482353)
+albedo_texture = ExtResource("5_8p5qq")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sxoht"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.466667, 0.482353, 1, 0.270588)
+albedo_texture = ExtResource("5_8p5qq")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xjat7"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.478431, 0.4, 1, 0.141176)
+albedo_texture = ExtResource("5_8p5qq")
+
 [node name="MainScene" type="Node3D"]
 script = SubResource("GDScript_8yide")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-1, 7.6194e-09, -8.70901e-08, 6.11352e-09, 0.999851, 0.0172779, 8.72088e-08, 0.0172779, -0.999851, 0, 13.4153, 0)
+transform = Transform3D(-1, -6.0983e-09, 8.72098e-08, 0, 0.997564, 0.0697565, -8.74228e-08, 0.0697565, -0.997564, 0, 10.59, -26.5896)
 light_color = Color(1, 0, 0.960784, 1)
+light_angular_distance = 6.0
 shadow_enabled = true
+shadow_opacity = 0.6
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_jyxof")
@@ -77,10 +109,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.73614, 0)
 script = ExtResource("2_qaxw3")
 fire_rate = 0.18
 
-[node name="AimMesh" type="MeshInstance3D" parent="Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.10043)
+[node name="AimDebugRoot" type="Node3D" parent="Camera3D"]
+top_level = true
+script = ExtResource("2_ti3nm")
+
+[node name="AimDebug" type="MeshInstance3D" parent="Camera3D/AimDebugRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 material_override = SubResource("StandardMaterial3D_trxi3")
 mesh = SubResource("QuadMesh_3tmvj")
+skeleton = NodePath("../..")
 
 [node name="World" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.795243, 0)
@@ -88,16 +125,118 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.795243, 0)
 [node name="Tarrein" type="MeshInstance3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55649, 0)
 material_override = SubResource("StandardMaterial3D_th3mv")
-cast_shadow = 0
+cast_shadow = 2
 mesh = ExtResource("4_m82ig")
 skeleton = NodePath("../..")
 
-[node name="Sphere" type="MeshInstance3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55649, -67.7459)
+[node name="Sun" type="MeshInstance3D" parent="World"]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, -200)
 material_override = SubResource("StandardMaterial3D_clxgu")
 cast_shadow = 0
 mesh = SubResource("SphereMesh_s1sdd")
 
+[node name="Glow1" type="MeshInstance3D" parent="World/Sun"]
+transform = Transform3D(1.05, 0, 0, 0, 1.05, 0, 0, 0, 1.05, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_7e3mn")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_s1sdd")
+skeleton = NodePath("../..")
+
+[node name="Glow2" type="MeshInstance3D" parent="World/Sun"]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_7e3mn")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_s1sdd")
+skeleton = NodePath("../..")
+
 [node name="Floor" type="MeshInstance3D" parent="World"]
 material_override = SubResource("StandardMaterial3D_by7c5")
 mesh = SubResource("PlaneMesh_dd0dd")
+
+[node name="Glow1" type="MeshInstance3D" parent="World/Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+material_override = SubResource("StandardMaterial3D_ah08m")
+mesh = SubResource("PlaneMesh_dd0dd")
+
+[node name="Glow2" type="MeshInstance3D" parent="World/Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
+material_override = SubResource("StandardMaterial3D_sxoht")
+mesh = SubResource("PlaneMesh_dd0dd")
+skeleton = NodePath("../Glow1")
+
+[node name="Glow3" type="MeshInstance3D" parent="World/Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0599999, 0)
+material_override = SubResource("StandardMaterial3D_xjat7")
+mesh = SubResource("PlaneMesh_dd0dd")
+skeleton = NodePath("../Glow2")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(576, 324)
+script = ExtResource("6_bsb1o")
+
+[node name="ColorRect" type="ColorRect" parent="HUD"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(2, 2)
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+
+[node name="ShakeLabel" type="Label" parent="HUD/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "[s] toggle shake : enabled"
+
+[node name="RecoilLabel" type="Label" parent="HUD/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "[r] toggle recoil : enabled"
+
+[node name="HudLabel" type="Label" parent="HUD/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "[h] toggle hud shake : enabled"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HUD/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="FireLabel" type="Label" parent="HUD/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+text = "[left mouse] shoot"
+
+[node name="SensLabel" type="Label" parent="HUD/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+text = "[up] [down] shange sensitivity : 1"
+
+[node name="WeaponLabel" type="Label" parent="HUD/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+text = "[1] [2] [3] equip weapon : rifle"
