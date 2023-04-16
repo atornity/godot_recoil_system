@@ -1,10 +1,14 @@
-[gd_scene load_steps=22 format=3 uid="uid://cat4pp5xk5cc3"]
+[gd_scene load_steps=28 format=3 uid="uid://b4gj58hodh2nl"]
 
 [ext_resource type="Script" path="res://scripts/camera.gd" id="2_qaxw3"]
 [ext_resource type="Script" path="res://scenes/aim_debug.gd" id="2_ti3nm"]
+[ext_resource type="AudioStream" uid="uid://bolwvbv8qg5pn" path="res://sounds/pistol.ogg" id="3_0piqr"]
 [ext_resource type="Texture2D" uid="uid://b0xi6mvwhqlx1" path="res://images/tarrein.png" id="3_4ba83"]
+[ext_resource type="AudioStream" uid="uid://duh2bqrfpn7ad" path="res://sounds/rifle.ogg" id="4_m4bee"]
 [ext_resource type="ArrayMesh" uid="uid://dk44d8yugvva2" path="res://models/tarrein.res" id="4_m82ig"]
+[ext_resource type="AudioStream" uid="uid://cikhr5pm4kmrr" path="res://sounds/shotgun.ogg" id="4_whfu1"]
 [ext_resource type="Texture2D" uid="uid://dkkxjg1jhf3um" path="res://images/floor.png" id="5_8p5qq"]
+[ext_resource type="AudioStream" uid="uid://biihma5ra0t1b" path="res://sounds/weapswitch.ogg" id="6_6th2l"]
 [ext_resource type="Script" path="res://scenes/hud.gd" id="6_bsb1o"]
 
 [sub_resource type="GDScript" id="GDScript_8yide"]
@@ -62,7 +66,19 @@ height = 20.0
 transparency = 1
 blend_mode = 1
 shading_mode = 0
-albedo_color = Color(0.815686, 0.290196, 0.709804, 0.196078)
+albedo_color = Color(0.815686, 0.290196, 0.709804, 0.156863)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_07nfl"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(0.815686, 0.290196, 0.709804, 0.0156863)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_knf5u"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(0.815686, 0.290196, 0.709804, 0.00784314)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_by7c5"]
 transparency = 1
@@ -119,6 +135,30 @@ material_override = SubResource("StandardMaterial3D_trxi3")
 mesh = SubResource("QuadMesh_3tmvj")
 skeleton = NodePath("../..")
 
+[node name="AudioListener3D" type="AudioListener3D" parent="Camera3D"]
+
+[node name="PistolAudio" type="AudioStreamPlayer3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120905, -0.371764)
+stream = ExtResource("3_0piqr")
+volume_db = -28.0
+pitch_scale = 1.1
+
+[node name="RifleAudio" type="AudioStreamPlayer3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120905, -0.371764)
+stream = ExtResource("4_m4bee")
+volume_db = -29.0
+pitch_scale = 1.5
+
+[node name="ShotgunAudio" type="AudioStreamPlayer3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120905, -0.371764)
+stream = ExtResource("4_whfu1")
+volume_db = -15.0
+
+[node name="SwitchWeaponAudio" type="AudioStreamPlayer3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120905, -0.371764)
+stream = ExtResource("6_6th2l")
+volume_db = -15.0
+
 [node name="World" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.795243, 0)
 
@@ -136,15 +176,22 @@ cast_shadow = 0
 mesh = SubResource("SphereMesh_s1sdd")
 
 [node name="Glow1" type="MeshInstance3D" parent="World/Sun"]
-transform = Transform3D(1.05, 0, 0, 0, 1.05, 0, 0, 0, 1.05, 0, 0, 0)
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
 material_override = SubResource("StandardMaterial3D_7e3mn")
 cast_shadow = 0
 mesh = SubResource("SphereMesh_s1sdd")
 skeleton = NodePath("../..")
 
 [node name="Glow2" type="MeshInstance3D" parent="World/Sun"]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
-material_override = SubResource("StandardMaterial3D_7e3mn")
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_07nfl")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_s1sdd")
+skeleton = NodePath("../..")
+
+[node name="Glow3" type="MeshInstance3D" parent="World/Sun"]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, -10.6831)
+material_override = SubResource("StandardMaterial3D_knf5u")
 cast_shadow = 0
 mesh = SubResource("SphereMesh_s1sdd")
 skeleton = NodePath("../..")
@@ -240,3 +287,12 @@ text = "[up] [down] shange sensitivity : 1"
 [node name="WeaponLabel" type="Label" parent="HUD/MarginContainer/VBoxContainer2"]
 layout_mode = 2
 text = "[1] [2] [3] equip weapon : rifle"
+
+[node name="MuteLabel" type="Label" parent="HUD/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+text = "[m] toggle audio : enabled"
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.962669, 0)
+light_energy = 4.0
+omni_range = 4.10669

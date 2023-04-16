@@ -36,6 +36,7 @@ enum RecoilMode {
 var look_rotation = transform.basis.get_euler()
 
 # shooty shoot
+@onready var shoot_sound = $RifleAudio as AudioStreamPlayer3D
 var is_shooting = false
 var shots_fired = 0
 var can_shoot = true
@@ -58,29 +59,11 @@ var shake_fov_vel: float = 0
 
 
 func _input(event):
-	if event.is_action_pressed("action_equip_pistol"):
-		fire_mode = FireMode.MANUAL
-		fire_rate = 0.05
-		recoil_scale = 0.9
-		shake_scale = 0.05
-	if event.is_action_pressed("action_equip_rifle"):
-		fire_mode = FireMode.AUTOMATIC
-		fire_rate = 0.15
-		recoil_scale = 1
-		shake_scale = 0.1
-	if event.is_action_pressed("action_equip_shotgun"):
-		fire_mode = FireMode.MANUAL
-		fire_rate = 0.4
-		recoil_scale = 3
-		shake_scale = 0.6
-	
+	switch_weapon_input(event)
 	mouse_input(event)
 
 
 func _process(delta):
-	if Globals.lock_mouse_x:
-		look_rotation.x = 0
-	
 	process_shooting(delta)
 	process_shake(delta)
 	process_recoil(delta)
@@ -91,7 +74,7 @@ func _process(delta):
 
 
 func mouse_input(event):
-	if !Globals.mouse_enabled || Input.mouse_mode != Input.MOUSE_MODE_CAPTURED: return
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED: return
 	
 	if event is InputEventMouseMotion:
 		var mouse_delta = event.relative * Vector2(sensitivity.x, sensitivity.y) * 0.001 * Globals.sensitivity_scale
@@ -104,6 +87,8 @@ func mouse_input(event):
 
 @warning_ignore("shadowed_variable")
 func shoot(recoil: Vector3):
+	if Globals.audio_enabled:
+		shoot_sound.play()
 	if Globals.shake_enabled:
 		add_shake(Vector3(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3), randf_range(-1, 1)) * shake_scale, 60 * shake_scale)
 	if Globals.recoil_enabled:
@@ -138,6 +123,30 @@ func process_shooting(delta: float):
 	
 	if !is_shooting:
 		shots_fired = 0
+
+
+func switch_weapon_input(event):
+	if event.is_action_pressed("action_equip_pistol"):
+		$SwitchWeaponAudio.play()
+		shoot_sound = $PistolAudio
+		fire_mode = FireMode.MANUAL
+		fire_rate = 0.05
+		recoil_scale = 0.9
+		shake_scale = 0.05
+	if event.is_action_pressed("action_equip_rifle"):
+		$SwitchWeaponAudio.play()
+		shoot_sound = $RifleAudio
+		fire_mode = FireMode.AUTOMATIC
+		fire_rate = 0.15
+		recoil_scale = 1
+		shake_scale = 0.1
+	if event.is_action_pressed("action_equip_shotgun"):
+		$SwitchWeaponAudio.play()
+		shoot_sound = $ShotgunAudio
+		fire_mode = FireMode.MANUAL
+		fire_rate = 0.8
+		recoil_scale = 3
+		shake_scale = 0.6
 
 
 @warning_ignore("shadowed_variable")

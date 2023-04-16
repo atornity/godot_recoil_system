@@ -14,6 +14,12 @@ func _input(event):
 		$MarginContainer/VBoxContainer2/WeaponLabel.text = "[1] [2] [3] equip weapon : rifle"
 	if event.is_action_pressed("action_equip_shotgun"):
 		$MarginContainer/VBoxContainer2/WeaponLabel.text = "[1] [2] [3] equip weapon : shotgun"
+	
+	if event.is_action_pressed("debug_toggle_show_hud"):
+		visible = !visible
+	
+	if event.is_action_pressed("debug_toggle_show_aim"):
+		$"../Camera3D/AimDebugRoot".visible = !$"../Camera3D/AimDebugRoot".visible
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -22,9 +28,8 @@ func _process(delta):
 	$MarginContainer/VBoxContainer/ShakeLabel.text = "[s] toggle shake : {0}".format(["enabled" if Globals.shake_enabled else "disabled"])
 	$MarginContainer/VBoxContainer/RecoilLabel.text = "[r] toggle recoil : {0}".format(["enabled" if Globals.recoil_enabled else "disabled"])
 	$MarginContainer/VBoxContainer/HudLabel.text = "[h] toggle hud shake : {0}".format(["enabled" if Globals.hud_shake_enabled else "disabled"])
-	
+	$MarginContainer/VBoxContainer2/MuteLabel.text = "[m] toggle audio : {0}".format(["enabled" if Globals.audio_enabled else "disabled"])
 	$MarginContainer/VBoxContainer2/SensLabel.text = "[up] [down] shange sensitivity : {0}".format([Globals.sensitivity_scale])
-	
 
 func process_hud_shake(delta: float):
 	if !Globals.hud_shake_enabled:
