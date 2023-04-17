@@ -1,7 +1,7 @@
-[gd_scene load_steps=28 format=3 uid="uid://b4gj58hodh2nl"]
+[gd_scene load_steps=28 format=3 uid="uid://c7ksmok3y5j2j"]
 
+[ext_resource type="Script" path="res://scripts/aim_debug.gd" id="2_7qv22"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="2_qaxw3"]
-[ext_resource type="Script" path="res://scenes/aim_debug.gd" id="2_ti3nm"]
 [ext_resource type="AudioStream" uid="uid://bolwvbv8qg5pn" path="res://sounds/pistol.ogg" id="3_0piqr"]
 [ext_resource type="Texture2D" uid="uid://b0xi6mvwhqlx1" path="res://images/tarrein.png" id="3_4ba83"]
 [ext_resource type="AudioStream" uid="uid://duh2bqrfpn7ad" path="res://sounds/rifle.ogg" id="4_m4bee"]
@@ -9,7 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://cikhr5pm4kmrr" path="res://sounds/shotgun.ogg" id="4_whfu1"]
 [ext_resource type="Texture2D" uid="uid://dkkxjg1jhf3um" path="res://images/floor.png" id="5_8p5qq"]
 [ext_resource type="AudioStream" uid="uid://biihma5ra0t1b" path="res://sounds/weapswitch.ogg" id="6_6th2l"]
-[ext_resource type="Script" path="res://scenes/hud.gd" id="6_bsb1o"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="10_66i0h"]
 
 [sub_resource type="GDScript" id="GDScript_8yide"]
 script/source = "extends Node3D
@@ -127,7 +127,7 @@ fire_rate = 0.18
 
 [node name="AimDebugRoot" type="Node3D" parent="Camera3D"]
 top_level = true
-script = ExtResource("2_ti3nm")
+script = ExtResource("2_7qv22")
 
 [node name="AimDebug" type="MeshInstance3D" parent="Camera3D/AimDebugRoot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
@@ -225,7 +225,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(576, 324)
-script = ExtResource("6_bsb1o")
+script = ExtResource("10_66i0h")
 
 [node name="ColorRect" type="ColorRect" parent="HUD"]
 layout_mode = 1
