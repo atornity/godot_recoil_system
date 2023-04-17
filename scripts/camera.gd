@@ -11,7 +11,7 @@ enum RecoilMode {
 }
 
 @export var fire_mode = FireMode.AUTOMATIC
-@export var fire_rate: float = 0.2
+@export var fire_rate: float = 0.18
 
 @export var recoil_mode = RecoilMode.PROCEDURAL
 @export var recoil_pattern := [
@@ -138,7 +138,7 @@ func switch_weapon_input(event):
 		$SwitchWeaponAudio.play()
 		shoot_sound = $RifleAudio
 		fire_mode = FireMode.AUTOMATIC
-		fire_rate = 0.15
+		fire_rate = 0.18
 		recoil_scale = 1
 		shake_scale = 0.1
 	if event.is_action_pressed("action_equip_shotgun"):
