@@ -1,8 +1,9 @@
 extends Control
 
 @export var shake_scale: float = 1
-@export var affects_rotation = 1
-@export var affects_scale = 1
+@export var affects_position: float = 1
+@export var affects_rotation: float = 1
+@export var affects_scale: float = 1
 
 @onready var camera = $"../Camera3D"
 
@@ -25,11 +26,15 @@ func _input(event):
 func _process(delta):
 	process_hud_shake(delta)
 	
+	# to make sure ratating/scaling is from the center rather than top left
+	pivot_offset = get_viewport_rect().size / 2
+	
 	$MarginContainer/VBoxContainer/ShakeLabel.text = "[s] toggle shake : {0}".format(["enabled" if Globals.shake_enabled else "disabled"])
 	$MarginContainer/VBoxContainer/RecoilLabel.text = "[r] toggle recoil : {0}".format(["enabled" if Globals.recoil_enabled else "disabled"])
 	$MarginContainer/VBoxContainer/HudLabel.text = "[h] toggle hud shake : {0}".format(["enabled" if Globals.hud_shake_enabled else "disabled"])
 	$MarginContainer/VBoxContainer2/MuteLabel.text = "[m] toggle audio : {0}".format(["enabled" if Globals.audio_enabled else "disabled"])
 	$MarginContainer/VBoxContainer2/SensLabel.text = "[up] [down] shange sensitivity : {0}".format([Globals.sensitivity_scale])
+	
 
 func process_hud_shake(delta: float):
 	if !Globals.hud_shake_enabled:
@@ -37,8 +42,9 @@ func process_hud_shake(delta: float):
 	
 	var shake: Vector3 = camera.shake * shake_scale
 	var shake_fov: float = camera.shake_fov * shake_scale
+	var view_size = get_viewport_rect().size
 	
-	position = Vector2(shake.y, shake.x) * (33333 / camera.fov)
-	scale = Vector2(1, 1) * (1 + shake_fov * 0.005 * affects_scale) # todo: maybe fix this idk
-	rotation = shake.z * (50 / camera.fov) * affects_rotation
+	position = Vector2(shake.y, shake.x) * (view_size.y * 50 / camera.fov) # this still needs work
+	scale = Vector2(1, 1) * (1 - shake_fov * 0.01 * affects_scale)
+	rotation = shake.z * affects_rotation
 	

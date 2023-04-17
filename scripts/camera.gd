@@ -77,6 +77,7 @@ func mouse_input(event):
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED: return
 	
 	if event is InputEventMouseMotion:
+		# the distance the mouse traveled scaled by sensitivity
 		var mouse_delta = event.relative * Vector2(sensitivity.x, sensitivity.y) * 0.001 * Globals.sensitivity_scale
 		
 		look_rotation.y -= mouse_delta.x
