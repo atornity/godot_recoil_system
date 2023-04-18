@@ -109,5 +109,4 @@ set_toggle_audio={
 
 [rendering]
 
-lights_and_shadows/directional_shadow/size=1024
 lights_and_shadows/directional_shadow/size.mobile=1024

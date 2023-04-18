@@ -1,14 +1,15 @@
-[gd_scene load_steps=31 format=3 uid="uid://hqomjpfdfmm"]
+[gd_scene load_steps=33 format=3 uid="uid://hqomjpfdfmm"]
 
 [ext_resource type="Script" path="res://scripts/aim_debug.gd" id="2_7qv22"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="2_qaxw3"]
-[ext_resource type="AudioStream" uid="uid://bolwvbv8qg5pn" path="res://sounds/pistol.ogg" id="3_0piqr"]
+[ext_resource type="AudioStream" uid="uid://bvevvqrym7vso" path="res://sounds/1911.wav" id="3_1u8d1"]
 [ext_resource type="Texture2D" uid="uid://b0xi6mvwhqlx1" path="res://images/tarrein.png" id="3_4ba83"]
-[ext_resource type="AudioStream" uid="uid://duh2bqrfpn7ad" path="res://sounds/rifle.ogg" id="4_m4bee"]
 [ext_resource type="ArrayMesh" uid="uid://dk44d8yugvva2" path="res://models/tarrein.res" id="4_m82ig"]
-[ext_resource type="AudioStream" uid="uid://cikhr5pm4kmrr" path="res://sounds/shotgun.ogg" id="4_whfu1"]
+[ext_resource type="AudioStream" uid="uid://dt7tpinjrm02q" path="res://sounds/ak47.wav" id="4_x3qao"]
 [ext_resource type="Texture2D" uid="uid://dkkxjg1jhf3um" path="res://images/floor.png" id="5_8p5qq"]
-[ext_resource type="AudioStream" uid="uid://biihma5ra0t1b" path="res://sounds/weapswitch.ogg" id="6_6th2l"]
+[ext_resource type="AudioStream" uid="uid://bn20c3hm3eicq" path="res://sounds/nova.wav" id="5_or7md"]
+[ext_resource type="AudioStream" uid="uid://biihma5ra0t1b" path="res://sounds/q009s/weapswitch.ogg" id="6_csrd7"]
+[ext_resource type="AudioStream" uid="uid://cnp5rnuft5d37" path="res://sounds/hitmarker2.wav" id="7_c3ltq"]
 [ext_resource type="Script" path="res://scripts/hud.gd" id="10_66i0h"]
 [ext_resource type="Shader" path="res://shaders/particle.gdshader" id="10_yxt3l"]
 
@@ -50,13 +51,6 @@ albedo_color = Color(1, 1, 1, 0.25098)
 
 [sub_resource type="QuadMesh" id="QuadMesh_3tmvj"]
 size = Vector2(0.01, 0.01)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_th3mv"]
-specular_mode = 2
-albedo_texture = ExtResource("3_4ba83")
-emission_enabled = true
-emission_energy_multiplier = 0.33
-emission_texture = ExtResource("3_4ba83")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_clxgu"]
 transparency = 1
@@ -122,6 +116,15 @@ shader_parameter/light_affect = 0.1
 material = SubResource("ShaderMaterial_llnxm")
 size = Vector2(0.02, 0.02)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_th3mv"]
+specular_mode = 2
+albedo_texture = ExtResource("3_4ba83")
+emission_enabled = true
+emission_energy_multiplier = 0.33
+emission_texture = ExtResource("3_4ba83")
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_diny8"]
+
 [node name="MainScene" type="Node3D"]
 script = SubResource("GDScript_8yide")
 
@@ -129,8 +132,9 @@ script = SubResource("GDScript_8yide")
 environment = SubResource("Environment_jyxof")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-1, 9.13817e-09, -8.69439e-08, 0, 0.994522, 0.104528, 8.74228e-08, 0.104528, -0.994522, 0, 10.59, -26.5896)
+transform = Transform3D(-1, -7.6194e-09, 8.70901e-08, 0, 0.996195, 0.0871557, -8.74228e-08, 0.0871557, -0.996195, 0, 10.59, -26.5896)
 light_color = Color(1, 0, 0.6, 1)
+light_angular_distance = 1.0
 light_cull_mask = 4294967263
 shadow_enabled = true
 
@@ -152,35 +156,35 @@ skeleton = NodePath("../..")
 
 [node name="PistolAudio" type="AudioStreamPlayer3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120905, -0.371764)
-stream = ExtResource("3_0piqr")
-volume_db = -28.0
-pitch_scale = 1.1
+stream = ExtResource("3_1u8d1")
+volume_db = -6.0
+pitch_scale = 1.2
 
 [node name="RifleAudio" type="AudioStreamPlayer3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120905, -0.371764)
-stream = ExtResource("4_m4bee")
-volume_db = -29.0
-pitch_scale = 1.5
+stream = ExtResource("4_x3qao")
+volume_db = -5.0
 
 [node name="ShotgunAudio" type="AudioStreamPlayer3D" parent="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120905, -0.371764)
-stream = ExtResource("4_whfu1")
+stream = ExtResource("5_or7md")
+volume_db = -5.0
+pitch_scale = 0.9
+
+[node name="SwitchWeaponAudio" type="AudioStreamPlayer" parent="Camera3D"]
+stream = ExtResource("6_csrd7")
 volume_db = -15.0
 
-[node name="SwitchWeaponAudio" type="AudioStreamPlayer3D" parent="Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120905, -0.371764)
-stream = ExtResource("6_6th2l")
-volume_db = -15.0
+[node name="HitMarkAudio" type="AudioStreamPlayer" parent="Camera3D"]
+stream = ExtResource("7_c3ltq")
+volume_db = -10.0
+
+[node name="RayCast3D" type="RayCast3D" parent="Camera3D"]
+target_position = Vector3(0, 0, -100)
+collision_mask = 2
 
 [node name="World" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.795243, 0)
-
-[node name="Tarrein" type="MeshInstance3D" parent="World"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55649, 0)
-material_override = SubResource("StandardMaterial3D_th3mv")
-cast_shadow = 2
-mesh = ExtResource("4_m82ig")
-skeleton = NodePath("../..")
 
 [node name="Sun" type="MeshInstance3D" parent="World"]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, -200)
@@ -232,6 +236,7 @@ skeleton = NodePath("../Glow2")
 
 [node name="CPUParticles3D" type="CPUParticles3D" parent="World"]
 transform = Transform3D(0.722714, 0, 0.691147, 0, 1, 0, -0.691147, 0, 0.722714, 0.295369, -0.479998, 0.0253029)
+visible = false
 layers = 32
 amount = 1000
 mesh = SubResource("QuadMesh_gd112")
@@ -257,6 +262,26 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.167426, 0)
 light_color = Color(0.54902, 0.513726, 1, 1)
 light_energy = 0.5
 omni_range = 8.43046
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.167426, 0)
+light_color = Color(0.286275, 0, 1, 1)
+omni_range = 11.6855
+
+[node name="Mountains" type="StaticBody3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55649, 0)
+collision_mask = 3
+metadata/_edit_group_ = true
+
+[node name="Tarrein" type="MeshInstance3D" parent="World/Mountains"]
+material_override = SubResource("StandardMaterial3D_th3mv")
+cast_shadow = 2
+mesh = ExtResource("4_m82ig")
+skeleton = NodePath("../../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Mountains"]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, -0.883906, 0)
+shape = SubResource("WorldBoundaryShape3D_diny8")
 
 [node name="HUD" type="Control" parent="."]
 layout_mode = 3

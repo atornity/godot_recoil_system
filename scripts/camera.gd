@@ -41,6 +41,7 @@ var is_shooting = false
 var shots_fired = 0
 var can_shoot = true
 var shoot_time: float = 0
+var shoot_impulse: float = 1
 
 # recoil
 var target_recoil = Vector3.ZERO
@@ -88,6 +89,15 @@ func mouse_input(event):
 
 @warning_ignore("shadowed_variable")
 func shoot(recoil: Vector3):
+	var ray = $RayCast3D as RayCast3D
+	
+	if ray.is_colliding():
+		var coll = ray.get_collider()
+		if coll.has_method("apply_impulse"):
+			var pos = ray.global_position - coll.global_position
+			coll.apply_impulse(-basis.z * shoot_impulse, pos * 0.5)
+		$HitMarkAudio.play()
+	
 	if Globals.audio_enabled:
 		shoot_sound.play()
 	if Globals.shake_enabled:
@@ -131,9 +141,10 @@ func switch_weapon_input(event):
 		$SwitchWeaponAudio.play()
 		shoot_sound = $PistolAudio
 		fire_mode = FireMode.MANUAL
-		fire_rate = 0.05
+		fire_rate = 0.07
 		recoil_scale = 0.9
 		shake_scale = 0.05
+		shoot_impulse = 1.5
 	if event.is_action_pressed("action_equip_rifle"):
 		$SwitchWeaponAudio.play()
 		shoot_sound = $RifleAudio
@@ -141,13 +152,15 @@ func switch_weapon_input(event):
 		fire_rate = 0.18
 		recoil_scale = 1
 		shake_scale = 0.1
+		shoot_impulse = 1
 	if event.is_action_pressed("action_equip_shotgun"):
 		$SwitchWeaponAudio.play()
 		shoot_sound = $ShotgunAudio
 		fire_mode = FireMode.MANUAL
-		fire_rate = 0.8
+		fire_rate = 0.6
 		recoil_scale = 3
-		shake_scale = 0.6
+		shake_scale = 0.4
+		shoot_impulse = 8
 
 
 @warning_ignore("shadowed_variable")
